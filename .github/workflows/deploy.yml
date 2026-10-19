@@ -1,0 +1,64 @@
+# Déploiement automatique de Senior Bon Plan sur GitHub Pages.
+#
+# Principe : à chaque push sur main, on compile l'application (bun run build)
+# puis on publie le dossier dist/ sur GitHub Pages. Le fichier public/CNAME
+# (recopié dans dist/ par Vite) impose le domaine personnalisé
+# www.bonplansenior.alphabette.fr.
+#
+# Prérequis (une seule fois, dans GitHub → Settings → Pages) :
+#   Source : GitHub Actions.
+# Et côté DNS : un enregistrement CNAME « www » → azertylm.github.io.
+
+name: Déployer Senior Bon Plan
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-senior-bon-plan
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Installer les dépendances
+        run: bun install
+
+      - name: Vérifier les types
+        run: bun run lint
+
+      - name: Compiler l'application
+        run: bun run build
+
+      - name: Configurer Pages
+        uses: actions/configure-pages@v5
+
+      - name: Publier l'artefact (dist/)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Déployer vers GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

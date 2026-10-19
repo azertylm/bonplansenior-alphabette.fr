@@ -22,6 +22,10 @@ export const APP: AlphaAppConfig = {
   accountUrl: 'https://alphabette.fr/compte',
   apiKeysUrl: 'https://alphabette.fr/cles',
 
+  // Senior Bon Plan est gratuit et participatif : la base n'affiche, ici, ni
+  // prix, ni essai, ni bouton de paiement — seulement les liens vers le hub.
+  gratuit: true,
+
   // Compteur de la barre écosystème : calculé automatiquement depuis le
   // registre central (X applications en ligne / Y au total). Pour forcer des
   // valeurs précises (ex. essai en cours), décommenter :
