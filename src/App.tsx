@@ -18,8 +18,8 @@ import type { Conseil, Rubrique } from './senior-data';
  * données transmises ailleurs.
  */
 
-const CLE_CATS = 'sp-cats';
-const CLE_TIPS = 'sp-tips';
+const CLE_CATS = 'sp-cats-v2';
+const CLE_TIPS = 'sp-tips-v2';
 
 /** Lit / écrit les données initiales, en conservant les contributions locales. */
 function lire<Cle extends string>(cle: Cle, defaut: unknown): object {

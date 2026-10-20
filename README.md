@@ -19,7 +19,7 @@ Sans pub, sans compte obligatoire, sans données transmises ailleurs.
 
 | | |
 |---|---|
-| 🗂️ **10 rubriques seniors** | Santé & médecins, médicaments, aides à domicile, retraite, numérique, transports, bien manger, loisirs, sécurité & arnaques, bien-être |
+| 🗂️ **10 rubriques seniors** | Santé & médecins, médicaments, aides à domicile, retraite, numérique, transports, bien manger, loisirs, sécurité & arnaques, bien-être — **150 conseils de départ** |
 | 🗳️ **Votes utiles** | 👍 / 👎 par conseil, onglets *Meilleurs* / *Récents*, 👑 couronne du meilleur conseil |
 | 🔎 **Recherche** | Filtre instantané sur les rubriques depuis le héros |
 | ✍️ **Partage** | Publier un conseil (titre, prénom, lien, texte) ; vote automatique pour son propre conseil |
@@ -52,7 +52,7 @@ src/
   main.tsx                    point d'entrée
   App.tsx                     application enveloppée par <AppShell>
   alphabette.app.ts           identité du site (nom, sous-titre, couleur, liens)
-  senior-data.ts              semis : 10 rubriques + 50 conseils de départ
+  senior-data.ts              semis : 10 rubriques + 150 conseils de départ
   senior.css                  style (palette dérivée de --ab-*)
   shell/                      base commune @alphabette/shell (générée, à ne pas recoder)
 ```
