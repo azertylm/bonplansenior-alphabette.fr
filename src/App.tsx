@@ -3,7 +3,7 @@ import '@alphabette/shell/style.css';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { APP } from './alphabette.app';
 import './senior.css';
-import { CAT_COLORS, DEFAULT_CATS, DEFAULT_TIPS } from './senior-data';
+import { CAT_COLORS, DEFAULT_CATS, DEFAULT_TIPS, SEMIS_VERSION } from './senior-data';
 import type { Conseil, Rubrique } from './senior-data';
 
 /**
@@ -18,8 +18,10 @@ import type { Conseil, Rubrique } from './senior-data';
  * données transmises ailleurs.
  */
 
-const CLE_CATS = 'sp-cats-v2';
-const CLE_TIPS = 'sp-tips-v2';
+// Les clés intègrent la version du semis : si le semis de départ évolue,
+// augmenter SEMIS_VERSION dans senior-data.ts recharge la nouvelle base de contenu.
+const CLE_CATS = `sp-cats-v${SEMIS_VERSION}`;
+const CLE_TIPS = `sp-tips-v${SEMIS_VERSION}`;
 
 /** Lit / écrit les données initiales, en conservant les contributions locales. */
 function lire<Cle extends string>(cle: Cle, defaut: unknown): object {

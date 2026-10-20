@@ -31,6 +31,10 @@ export interface RubriqueCouleur {
   [id: number]: { color: string; bg: string };
 }
 
+// Version du semis de départ : à augmenter à chaque évolution du contenu de base
+// (les données locales des visiteurs sont alors re-semées avec la nouvelle version).
+export const SEMIS_VERSION = 3;
+
 export const DEFAULT_CATS: Rubrique[] = [
   { id: 1, emoji: '❤️‍🩹', label: 'Santé & Médecins', desc: 'Soins, médicaments, droits' },
   { id: 2, emoji: '💊', label: 'Médicaments & Pharmacie', desc: 'Ordonnances, génériques, prix' },
