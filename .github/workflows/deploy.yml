@@ -46,6 +46,10 @@ jobs:
 
       - name: Configurer Pages
         uses: actions/configure-pages@v5
+        with:
+          # Active Pages automatiquement (source : GitHub Actions) si ça n'a
+          # pas encore été fait à la main dans Settings → Pages.
+          enablement: true
 
       - name: Publier l'artefact (dist/)
         uses: actions/upload-pages-artifact@v3
