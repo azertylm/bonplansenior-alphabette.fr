@@ -104,6 +104,7 @@
   margin: 34px auto 0;
 }
 .sbp-recherche input {
+  box-sizing: border-box;
   width: 100%;
   padding: 22px 28px 22px 76px;
   border-radius: 100px;
@@ -705,4 +706,10 @@
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Téléphones : champ de recherche plus compact. */
+@media (max-width: 480px) {
+  .sbp-recherche input { padding: 16px 18px 16px 58px; font-size: 1.1rem; }
+  .sbp-recherche-icone { left: 20px; font-size: 1.5rem; }
 }
