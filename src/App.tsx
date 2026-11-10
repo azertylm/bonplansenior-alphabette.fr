@@ -221,15 +221,16 @@ function EspaceAccueil({ rubriques, tips, stats, recherche, modo, notif, onReche
       )}
 
       <section className="sbp-hero">
-        <div className="sbp-hero-tag">🌟 Gratuit · Participatif · Pour vous</div>
+        <div className="sbp-hero-tag">🌟 Gratuit · Sans publicité · Pour vous</div>
         <h1>
           Des conseils utiles
           <br />
           pour <em>bien vivre</em> au quotidien
         </h1>
         <p>
-          Retrouvez les meilleures astuces, recommandations et bonnes adresses,
-          sélectionnées et votées par d'autres seniors comme vous.
+          Des astuces, droits et bonnes adresses sélectionnés par l'équipe
+          Senior Bon Plan. Votez pour ceux qui vous aident, ajoutez les vôtres.
+          Vos votes et vos conseils restent sur cet appareil.
         </p>
         <div className="sbp-recherche">
           <span aria-hidden className="sbp-recherche-icone">🔍</span>
@@ -248,7 +249,7 @@ function EspaceAccueil({ rubriques, tips, stats, recherche, modo, notif, onReche
         </div>
       </section>
 
-      <section className="sbp-stats" aria-label="Statut de la communauté">
+      <section className="sbp-stats" aria-label="En chiffres">
         <div className="sbp-stat">
           <div className="sbp-stat-icone" aria-hidden>💡</div>
           <div className="sbp-stat-n">{stats.conseils}</div>
@@ -257,7 +258,7 @@ function EspaceAccueil({ rubriques, tips, stats, recherche, modo, notif, onReche
         <div className="sbp-stat">
           <div className="sbp-stat-icone" aria-hidden>👍</div>
           <div className="sbp-stat-n">{stats.votes.toLocaleString('fr-FR')}</div>
-          <div className="sbp-stat-libelle">Votes utiles</div>
+          <div className="sbp-stat-libelle">Vos votes</div>
         </div>
         <div className="sbp-stat">
           <div className="sbp-stat-icone" aria-hidden>📂</div>
@@ -394,7 +395,7 @@ function PageRubrique({
           onClick={() => setFormulaireOuvert((ouvert) => !ouvert)}
         >
           <span className="sbp-proposer-plus" aria-hidden>＋</span>
-          <span>Partager un conseil avec la communauté</span>
+          <span>Ajouter un conseil (gardé sur cet appareil)</span>
         </button>
 
         {formulaireOuvert && (
@@ -563,7 +564,15 @@ function CarteConseil({ conseil, premier, modo, onVote, onSignaler, onSupprimer,
       <div className="sbp-carte-corps">
         <h3 className="sbp-carte-titre">{conseil.title}</h3>
         <div className="sbp-carte-meta">
-          Partagé par <strong>{conseil.author}</strong> · {conseil.date}
+          {conseil.date ? (
+            <>
+              Ajouté par <strong>{conseil.author}</strong> · {conseil.date}
+            </>
+          ) : (
+            <>
+              Sélection de l'<strong>{conseil.author}</strong>
+            </>
+          )}
         </div>
         <p className="sbp-carte-resume">{conseil.summary}</p>
         {lienValide && (
