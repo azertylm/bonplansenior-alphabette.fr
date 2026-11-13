@@ -1,6 +1,6 @@
 import { AppShell } from '@alphabette/shell';
 import '@alphabette/shell/style.css';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { APP } from './alphabette.app';
 import './senior.css';
 import { CAT_COLORS, DEFAULT_CATS, DEFAULT_TIPS, SEMIS_VERSION } from './senior-data';
@@ -36,6 +36,29 @@ function lire<Cle extends string>(cle: Cle, defaut: unknown): object {
 }
 
 type Filtre = 'top' | 'new';
+
+/**
+ * Rend les numéros de téléphone du texte cliquables (lien « tel: ») : un
+ * simple appui sur le téléphone lance l'appel. On ne touche qu'aux numéros
+ * courts connus (15, 17, 18, 112, 3114, 3133, 3237, 3635, 3960, 3977).
+ */
+const NUMERO = /((?:\b(?:le|au|du|numéro)\s))(15|17|18|112|3114|3133|3237|3635|3960|3977)\b(?!\.fr|\s*(?:h\b|heures|minutes|%|€|mars|mai|juin))/gi;
+function avecNumerosCliquables(texte: string) {
+  const morceaux: React.ReactNode[] = [];
+  let dernier = 0;
+  for (const m of texte.matchAll(NUMERO)) {
+    const debut = (m.index ?? 0) + m[1].length;
+    morceaux.push(texte.slice(dernier, debut));
+    morceaux.push(
+      <a key={debut} className="sbp-tel" href={`tel:${m[2]}`} aria-label={`Appeler le ${m[2].split('').join(' ')}`}>
+        {m[2]}
+      </a>,
+    );
+    dernier = debut + m[2].length;
+  }
+  morceaux.push(texte.slice(dernier));
+  return morceaux.map((x, i) => <Fragment key={i}>{x}</Fragment>);
+}
 
 export function App() {
   return (
@@ -74,6 +97,19 @@ function EspaceSenior() {
   useEffect(() => {
     return () => window.clearTimeout(minuterieNotif.current);
   }, []);
+
+  // Quand on change de page, le lecteur d'écran et le clavier repartent du titre.
+  const premierRendu = useRef(true);
+  useEffect(() => {
+    if (premierRendu.current) {
+      premierRendu.current = false;
+      return;
+    }
+    document.getElementById('sbp-titre')?.focus({ preventScroll: true });
+    document.title = rubriqueOuverte
+      ? `${rubriqueOuverte.label} — Senior Bon Plan`
+      : 'Senior Bon Plan — Conseils pour bien vivre';
+  }, [rubriqueOuverte]);
 
   const stats = useMemo(() => {
     const tout: Conseil[] = Object.values(tips).flat();
@@ -213,16 +249,16 @@ interface EspaceAccueilProps {
 
 function EspaceAccueil({ rubriques, tips, stats, recherche, modo, notif, onRecherche, onOuvrir, onBasculerModo }: EspaceAccueilProps) {
   return (
-    <div className="sbp">
+    <main className="sbp">
       {modo && (
         <div className="sbp-admin-bar">
-          🛡️ Mode Modération actif — vous pouvez supprimer les contenus inappropriés
+          <span aria-hidden>🛡️</span> Modération activée : vous pouvez supprimer les contenus inappropriés
         </div>
       )}
 
       <section className="sbp-hero">
         <div className="sbp-hero-tag">🌟 Gratuit · Sans publicité · Pour vous</div>
-        <h1>
+        <h1 id="sbp-titre" tabIndex={-1} className="sbp-titre-focus">
           Des conseils utiles
           <br />
           pour <em>bien vivre</em> au quotidien
@@ -235,7 +271,9 @@ function EspaceAccueil({ rubriques, tips, stats, recherche, modo, notif, onReche
         <div className="sbp-recherche">
           <span aria-hidden className="sbp-recherche-icone">🔍</span>
           <input
-            type="text"
+            type="search"
+            enterKeyHint="search"
+            autoComplete="off"
             value={recherche}
             onChange={(evenement) => onRecherche(evenement.target.value)}
             placeholder="Chercher une rubrique…"
@@ -244,7 +282,7 @@ function EspaceAccueil({ rubriques, tips, stats, recherche, modo, notif, onReche
         </div>
         <div className="sbp-modo-ligne">
           <button type="button" className="sbp-modo" onClick={onBasculerModo} aria-pressed={modo}>
-            🛡️ Modo
+            <span aria-hidden>🛡️</span> Modération (équipe)
           </button>
         </div>
       </section>
@@ -268,7 +306,7 @@ function EspaceAccueil({ rubriques, tips, stats, recherche, modo, notif, onReche
       </section>
 
       <h2 className="sbp-section-titre">
-        {recherche ? `📌 Résultats pour « ${recherche} »` : '📌 Toutes les rubriques'}
+        {recherche ? `Résultats pour « ${recherche} »` : 'Toutes les rubriques'}
       </h2>
 
       {rubriques.length === 0 ? (
@@ -297,7 +335,7 @@ function EspaceAccueil({ rubriques, tips, stats, recherche, modo, notif, onReche
                 <span className="sbp-rubrique-desc">{rubrique.desc}</span>
                 {nombre > 0 && (
                   <span className="sbp-rubrique-compte">
-                    💡 {nombre} conseil{nombre > 1 ? 's' : ''}
+                    <span aria-hidden>💡</span> {nombre} conseil{nombre > 1 ? 's' : ''}
                   </span>
                 )}
               </button>
@@ -307,7 +345,7 @@ function EspaceAccueil({ rubriques, tips, stats, recherche, modo, notif, onReche
       )}
 
       <Notification message={notif} />
-    </div>
+    </main>
   );
 }
 
@@ -349,41 +387,41 @@ function PageRubrique({
   );
 
   return (
-    <div className="sbp">
-      <button type="button" className="sbp-retour" onClick={onRetour}>
-        <span className="sbp-retour-fleche" aria-hidden>←</span>
-        Retour aux rubriques
-      </button>
+    <main className="sbp">
+      <div className="sbp-retour-collant">
+        <button type="button" className="sbp-retour" onClick={onRetour}>
+          <span className="sbp-retour-fleche" aria-hidden>←</span>
+          Retour aux rubriques
+        </button>
+      </div>
 
       <div className="sbp-entete-rubrique">
         <span className="sbp-rubrique-grande" style={{ background: couleur.bg }} aria-hidden>
           {rubrique.emoji}
         </span>
         <div>
-          <h2>{rubrique.label}</h2>
-          <p>{tries.length} conseil{tries.length !== 1 ? 's' : ''} partagés</p>
+          <h1 id="sbp-titre" tabIndex={-1} className="sbp-titre-focus">{rubrique.label}</h1>
+          <p>{tries.length} conseil{tries.length > 1 ? 's' : ''} partagé{tries.length > 1 ? 's' : ''}</p>
         </div>
       </div>
 
       <div className="sbp-outils">
-        <div className="sbp-onglets" role="tablist">
+        <div className="sbp-onglets" role="group" aria-label="Ordre des conseils">
           <button
             type="button"
-            role="tab"
-            aria-selected={filtre === 'top'}
+            aria-pressed={filtre === 'top'}
             className={filtre === 'top' ? 'sbp-onglet actif' : 'sbp-onglet'}
             onClick={() => onFiltre('top')}
           >
-            🏆 Les meilleurs
+            <span aria-hidden>🏆</span> Les meilleurs
           </button>
           <button
             type="button"
-            role="tab"
-            aria-selected={filtre === 'new'}
+            aria-pressed={filtre === 'new'}
             className={filtre === 'new' ? 'sbp-onglet actif' : 'sbp-onglet'}
             onClick={() => onFiltre('new')}
           >
-            ✨ Les récents
+            <span aria-hidden>✨</span> Les récents
           </button>
         </div>
       </div>
@@ -392,10 +430,11 @@ function PageRubrique({
         <button
           type="button"
           className="sbp-proposer-bouton"
+          aria-expanded={formulaireOuvert}
           onClick={() => setFormulaireOuvert((ouvert) => !ouvert)}
         >
           <span className="sbp-proposer-plus" aria-hidden>＋</span>
-          <span>Ajouter un conseil (gardé sur cet appareil)</span>
+          <span>Ajouter un conseil<br /><small>Il restera sur cet appareil</small></span>
         </button>
 
         {formulaireOuvert && (
@@ -412,11 +451,11 @@ function PageRubrique({
         {tries.length === 0 ? (
           <div className="sbp-vide">
             <div className="sbp-vide-grande">🌱</div>
-            <h3>Soyez le premier !</h3>
+            <h2>Soyez le premier !</h2>
             <p>
               Il n'y a pas encore de conseil dans cette rubrique.
               <br />
-              Cliquez sur le bouton ci-dessus pour partager le vôtre.
+              Appuyez sur le bouton ci-dessus pour partager le vôtre.
             </p>
           </div>
         ) : (
@@ -437,8 +476,15 @@ function PageRubrique({
         )}
       </div>
 
+      <div className="sbp-retour-bas">
+        <button type="button" className="sbp-retour" onClick={onRetour}>
+          <span className="sbp-retour-fleche" aria-hidden>←</span>
+          Retour aux rubriques
+        </button>
+      </div>
+
       <Notification message={notif} />
-    </div>
+    </main>
   );
 }
 
@@ -455,16 +501,24 @@ function FormulaireConseil({
   const [auteur, setAuteur] = useState('');
   const [url, setUrl] = useState('');
   const [resume, setResume] = useState('');
+  const [erreur, setErreur] = useState('');
+  const refTitre = useRef<HTMLInputElement>(null);
+  const refAuteur = useRef<HTMLInputElement>(null);
+  const refUrl = useRef<HTMLInputElement>(null);
+  const refResume = useRef<HTMLTextAreaElement>(null);
 
   const envoyer = () => {
     if (!titre.trim() || !auteur.trim() || !resume.trim()) {
-      window.alert('⚠️ Merci de remplir au moins le titre, votre prénom et votre conseil.');
+      setErreur('Il manque une information. Merci de remplir le titre, votre prénom et votre conseil.');
+      (!titre.trim() ? refTitre : !auteur.trim() ? refAuteur : refResume).current?.focus();
       return;
     }
     if (url.trim() && !url.trim().startsWith('http')) {
-      window.alert('⚠️ Le lien doit commencer par https://');
+      setErreur('Le lien internet doit commencer par https://');
+      refUrl.current?.focus();
       return;
     }
+    setErreur('');
     onPublier({
       title: titre.trim(),
       author: auteur.trim(),
@@ -477,40 +531,52 @@ function FormulaireConseil({
   return (
     <form
       className="sbp-formulaire"
+      noValidate
       onSubmit={(evenement) => {
         evenement.preventDefault();
         envoyer();
       }}
     >
-      <h3>💡 Partager un conseil</h3>
+      <h2><span aria-hidden>💡</span> Partager un conseil</h2>
       <p>
         Vous connaissez une bonne adresse ou une astuce utile dans « {rubriqueLabel} » ?
         Partagez-la ici !
       </p>
+      <p className="sbp-aide">Les champs marqués d'une étoile (*) sont à remplir.</p>
+      {erreur && (
+        <p className="sbp-erreur" role="alert" id="sbp-erreur">
+          {erreur}
+        </p>
+      )}
       <div className="sbp-deux-colonnes">
-        <label className="sbp-champ">
-          Titre du conseil *
-          <input value={titre} onChange={(e) => setTitre(e.target.value)} placeholder="Ex : Mon médecin préféré…" />
+        <label className={`sbp-champ${erreur && !titre.trim() ? ' sbp-champ-invalide' : ''}`}>
+          Titre du conseil (obligatoire) *
+          <input ref={refTitre} required aria-required="true" aria-invalid={Boolean(erreur) && !titre.trim()} aria-describedby={erreur ? 'sbp-erreur' : undefined} value={titre} onChange={(e) => setTitre(e.target.value)} placeholder="Ex : Mon médecin préféré…" />
         </label>
-        <label className="sbp-champ">
-          Votre prénom *
-          <input value={auteur} onChange={(e) => setAuteur(e.target.value)} placeholder="Ex : Michèle" />
+        <label className={`sbp-champ${erreur && !auteur.trim() ? ' sbp-champ-invalide' : ''}`}>
+          Votre prénom (obligatoire) *
+          <input ref={refAuteur} required aria-required="true" aria-invalid={Boolean(erreur) && !auteur.trim()} aria-describedby={erreur ? 'sbp-erreur' : undefined} autoComplete="given-name" value={auteur} onChange={(e) => setAuteur(e.target.value)} placeholder="Ex : Michèle" />
         </label>
       </div>
       <label className="sbp-champ">
-        Lien internet (si disponible)
-        <input type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" />
+        Lien internet (si vous en avez un)
+        <input ref={refUrl} type="url" inputMode="url" aria-describedby={erreur ? 'sbp-erreur' : undefined} value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" />
       </label>
-      <label className="sbp-champ">
-        Votre conseil en quelques mots *
+      <label className={`sbp-champ${erreur && !resume.trim() ? ' sbp-champ-invalide' : ''}`}>
+        Votre conseil en quelques mots (obligatoire) *
         <textarea
+          ref={refResume}
+          required
+          aria-required="true"
+          aria-invalid={Boolean(erreur) && !resume.trim()}
+          aria-describedby={erreur ? 'sbp-erreur' : undefined}
           value={resume}
           onChange={(e) => setResume(e.target.value)}
           placeholder="Pourquoi recommandez-vous ce conseil ? Qu'y trouve-t-on ?"
         />
       </label>
       <div className="sbp-form-boutons">
-        <button type="submit" className="sbp-bouton-envoyer">✓ Publier mon conseil</button>
+        <button type="submit" className="sbp-bouton-envoyer"><span aria-hidden>✓</span> Publier mon conseil</button>
         <button type="button" className="sbp-bouton-annuler" onClick={onFermer}>Annuler</button>
       </div>
     </form>
@@ -539,30 +605,30 @@ function CarteConseil({ conseil, premier, modo, onVote, onSignaler, onSupprimer,
           type="button"
           className={`sbp-vote monter${monVote === 1 ? ' actif' : ''}`}
           onClick={() => onVote(conseil.id, 1)}
-          title="Ce conseil est utile"
+          aria-pressed={monVote === 1}
           aria-label="Ce conseil est utile"
         >
-          👍
+          <span className="sbp-vote-pouce" aria-hidden>👍</span> Utile
         </button>
-        <div className="sbp-vote-scores">
-          <div className={`sbp-score ${classeScore}`}>{conseil.score}</div>
-          <div className="sbp-score-libelle">votes</div>
+        <div className="sbp-vote-scores" role="group" aria-label={`Note du conseil : ${conseil.score} vote${Math.abs(conseil.score) > 1 ? 's' : ''}`}>
+          <div className={`sbp-score ${classeScore}`} aria-hidden>{conseil.score}</div>
+          <div className="sbp-score-libelle" aria-hidden>vote{Math.abs(conseil.score) > 1 ? 's' : ''}</div>
         </div>
         <button
           type="button"
           className={`sbp-vote baisser${monVote === -1 ? ' actif' : ''}`}
           onClick={() => onVote(conseil.id, -1)}
-          title="Ce conseil n'est pas utile"
+          aria-pressed={monVote === -1}
           aria-label="Ce conseil n'est pas utile"
         >
-          👎
+          <span className="sbp-vote-pouce" aria-hidden>👎</span> Pas utile
         </button>
-        {premier && <span className="sbp-badge top">👑 Meilleur conseil</span>}
-        {modo && conseil.flags >= 3 && <span className="sbp-badge signale">⚠️ Signalé</span>}
+        {premier && <span className="sbp-badge top"><span aria-hidden>👑</span> Meilleur conseil</span>}
+        {modo && conseil.flags >= 3 && <span className="sbp-badge signale"><span aria-hidden>⚠️</span> Signalé</span>}
       </div>
 
       <div className="sbp-carte-corps">
-        <h3 className="sbp-carte-titre">{conseil.title}</h3>
+        <h2 className="sbp-carte-titre">{conseil.title}</h2>
         <div className="sbp-carte-meta">
           {conseil.date ? (
             <>
@@ -574,19 +640,19 @@ function CarteConseil({ conseil, premier, modo, onVote, onSignaler, onSupprimer,
             </>
           )}
         </div>
-        <p className="sbp-carte-resume">{conseil.summary}</p>
+        <p className="sbp-carte-resume">{avecNumerosCliquables(conseil.summary)}</p>
         {lienValide && (
           <a className="sbp-carte-lien" href={conseil.url} target="_blank" rel="noopener noreferrer">
-            <span aria-hidden>🌐</span> Voir le site
+            <span aria-hidden>🌐</span> Voir le site <small>(s'ouvre dans un autre onglet)</small>
           </a>
         )}
         <div className="sbp-carte-actions">
           <button type="button" className="sbp-acte signaler" onClick={() => onSignaler(conseil.id)}>
-            🚩 Signaler{conseil.flags > 0 ? ` (${conseil.flags})` : ''}
+            <span aria-hidden>🚩</span> Signaler ce conseil{conseil.flags > 0 ? ` (${conseil.flags})` : ''}
           </button>
           {modo && (
             <button type="button" className="sbp-acte supprimer" onClick={() => onSupprimer(conseil.id)}>
-              🗑️ Supprimer
+              <span aria-hidden>🗑️</span> Supprimer
             </button>
           )}
         </div>

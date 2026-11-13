@@ -19,10 +19,14 @@
   --sbp-accent-tres-doux: color-mix(in oklab, var(--ab-accent) 8%, transparent);
   --sbp-fond-2: color-mix(in oklab, var(--ab-accent) 6%, var(--ab-surface));
   --sbp-bord-2: color-mix(in oklab, var(--ab-accent) 30%, var(--ab-border));
-  --sbp-encre-2: color-mix(in oklab, var(--ab-ink) 72%, var(--ab-muted));
-  --sbp-vert: color-mix(in oklab, var(--ab-ok) 85%, var(--ab-ink));
-  --sbp-rouge: var(--ab-warn);
-  --sbp-or: #b8860b;
+  --sbp-encre-2: color-mix(in oklab, var(--ab-ink) 85%, var(--ab-muted));
+  --sbp-vert: color-mix(in oklab, var(--ab-ok) 55%, var(--ab-ink));
+  --sbp-rouge: color-mix(in oklab, var(--ab-warn) 55%, var(--ab-ink));
+  /* Texte et boutons d'identité : l'accent est mélangé à l'encre pour tenir
+     un contraste d'au moins 4,5:1 en mode jour comme en mode nuit. */
+  --sbp-accent-texte: color-mix(in oklab, var(--ab-accent) 60%, var(--ab-ink));
+  --sbp-bouton-texte: var(--ab-bg);
+  --sbp-or: color-mix(in oklab, var(--ab-warn) 45%, var(--ab-ink));
 
   font-family: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-size: 1.125rem; /* 18 px : la base de lecture de toute l'application */
@@ -46,7 +50,7 @@
 .sbp a:focus-visible,
 .sbp input:focus-visible,
 .sbp textarea:focus-visible {
-  outline: 3px solid var(--sbp-accent);
+  outline: 4px solid var(--sbp-accent-texte);
   outline-offset: 3px;
 }
 
@@ -57,7 +61,7 @@
   background: var(--sbp-accent-tres-doux);
   padding: 16px 24px;
   margin: 24px 0 0;
-  color: var(--sbp-accent);
+  color: var(--sbp-accent-texte);
   text-align: center;
   font-weight: 800;
   font-size: 1.05rem;
@@ -72,7 +76,7 @@
   display: inline-block;
   background: var(--sbp-accent-doux);
   border: 2px solid var(--sbp-bord-2);
-  color: var(--sbp-accent);
+  color: var(--sbp-accent-texte);
   border-radius: 100px;
   padding: 10px 28px;
   font-weight: 800;
@@ -86,7 +90,7 @@
   margin: 0 0 20px;
 }
 .sbp-hero h1 em {
-  color: var(--sbp-accent);
+  color: var(--sbp-accent-texte);
   font-style: italic;
 }
 .sbp-hero > p {
@@ -117,9 +121,9 @@
   box-shadow: 0 4px 24px color-mix(in oklab, var(--ab-ink) 8%, transparent);
   transition: border-color 0.25s, box-shadow 0.25s;
 }
-.sbp-recherche input::placeholder { color: var(--ab-muted); }
+.sbp-recherche input::placeholder { color: var(--sbp-encre-2); opacity: 1; }
 .sbp-recherche input:focus {
-  border-color: var(--sbp-accent);
+  border-color: var(--sbp-accent-texte);
   box-shadow: 0 0 0 5px var(--sbp-accent-doux);
 }
 .sbp-recherche-icone {
@@ -137,7 +141,7 @@
   padding: 12px 26px;
   border-radius: 100px;
   background: transparent;
-  color: var(--ab-muted);
+  color: var(--sbp-encre-2);
   border: 2px solid var(--ab-border);
   font: inherit;
   font-weight: 800;
@@ -147,8 +151,8 @@
 }
 .sbp-modo[aria-pressed='true'] {
   background: var(--sbp-accent-doux);
-  color: var(--sbp-accent);
-  border-color: var(--sbp-accent);
+  color: var(--sbp-accent-texte);
+  border-color: var(--sbp-accent-texte);
 }
 
 /* ─── Statistiques ─── */
@@ -174,7 +178,7 @@
   font-family: 'Fraunces', Georgia, serif;
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--sbp-accent);
+  color: var(--sbp-accent-texte);
   line-height: 1.2;
 }
 .sbp-stat-libelle {
@@ -248,13 +252,13 @@
 .sbp-rubrique-desc {
   font-size: 1rem;
   line-height: 1.55;
-  color: var(--ab-muted);
+  color: var(--sbp-encre-2);
   font-weight: 700;
 }
 .sbp-rubrique-compte {
   display: inline-block;
   background: var(--cat-bg, var(--sbp-accent-doux));
-  color: var(--cat-color, var(--sbp-accent));
+  color: color-mix(in oklab, var(--cat-color, var(--sbp-accent)) 55%, var(--ab-ink));
   border: 2px solid var(--cat-color, var(--sbp-accent));
   border-radius: 100px;
   padding: 8px 22px;
@@ -281,8 +285,8 @@
   transition: color 0.2s, border-color 0.2s;
 }
 .sbp-retour:hover {
-  color: var(--sbp-accent);
-  border-color: var(--sbp-accent);
+  color: var(--sbp-accent-texte);
+  border-color: var(--sbp-accent-texte);
 }
 .sbp-retour-fleche {
   width: 46px;
@@ -313,9 +317,9 @@
   border: 3px solid color-mix(in oklab, var(--cat-color, var(--sbp-accent)) 35%, transparent);
   box-shadow: 0 4px 24px color-mix(in oklab, var(--ab-ink) 10%, transparent);
 }
-.sbp-entete-rubrique h2 { font-size: 2.4rem; margin: 0; line-height: 1.2; }
+.sbp-entete-rubrique h1 { font-size: 2.4rem; margin: 0; line-height: 1.2; }
 .sbp-entete-rubrique p {
-  color: var(--ab-muted);
+  color: var(--sbp-encre-2);
   font-weight: 800;
   font-size: 1.15rem;
   margin: 6px 0 0;
@@ -344,8 +348,8 @@
   transition: all 0.2s;
 }
 .sbp-onglet.actif {
-  background: var(--sbp-accent);
-  color: color-mix(in oklab, var(--ab-bg) 92%, white);
+  background: var(--sbp-accent-texte);
+  color: var(--sbp-bouton-texte);
   box-shadow: 0 2px 12px color-mix(in oklab, var(--ab-accent) 40%, transparent);
 }
 
@@ -359,7 +363,7 @@
   background: var(--sbp-accent-doux);
   border: 3px dashed var(--sbp-accent);
   border-radius: 28px;
-  color: var(--sbp-accent);
+  color: var(--sbp-accent-texte);
   font: inherit;
   font-size: 1.25rem;
   font-weight: 800;
@@ -369,8 +373,8 @@
   margin-bottom: 26px;
 }
 .sbp-proposer-bouton:hover {
-  background: var(--sbp-accent);
-  color: color-mix(in oklab, var(--ab-bg) 92%, white);
+  background: var(--sbp-accent-texte);
+  color: var(--sbp-bouton-texte);
   border-style: solid;
 }
 .sbp-proposer-plus { font-size: 2.4rem; line-height: 1; }
@@ -383,7 +387,7 @@
   margin-bottom: 30px;
   box-shadow: 0 0 40px var(--sbp-accent-tres-doux);
 }
-.sbp-formulaire h3 { font-size: 1.8rem; margin-bottom: 8px; }
+.sbp-formulaire h2 { font-size: 1.8rem; margin-bottom: 8px; }
 .sbp-formulaire > p { color: var(--sbp-encre-2); font-size: 1.15rem; margin-bottom: 24px; }
 .sbp-champ {
   display: block;
@@ -414,10 +418,10 @@
   margin-top: 6px;
 }
 .sbp-champ input::placeholder,
-.sbp-champ textarea::placeholder { color: var(--ab-muted); }
+.sbp-champ textarea::placeholder { color: var(--sbp-encre-2); opacity: 1; }
 .sbp-champ input:focus,
 .sbp-champ textarea:focus {
-  border-color: var(--sbp-accent);
+  border-color: var(--sbp-accent-texte);
   box-shadow: 0 0 0 5px var(--sbp-accent-tres-doux);
 }
 .sbp-champ textarea {
@@ -436,8 +440,8 @@
   padding: 18px 42px;
   border-radius: 100px;
   border: none;
-  background: var(--sbp-accent);
-  color: color-mix(in oklab, var(--ab-bg) 92%, white);
+  background: var(--sbp-accent-texte);
+  color: var(--sbp-bouton-texte);
   font: inherit;
   font-size: 1.2rem;
   font-weight: 800;
@@ -497,29 +501,34 @@
 /* Zone de vote : pouce géant, impossible de se tromper */
 .sbp-vote-colonne {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 20px;
+  justify-content: center;
+  gap: 12px 16px;
   padding: 20px 26px;
   background: var(--sbp-fond-2);
   border-bottom: 3px solid var(--ab-border);
 }
 .sbp-vote {
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
+  min-height: 60px;
+  padding: 8px 20px;
+  border-radius: 100px;
   border: 3px solid var(--sbp-bord-2);
   background: var(--ab-surface);
-  color: var(--ab-muted);
-  font-size: 2rem;
-  display: flex;
+  color: var(--sbp-encre-2);
+  font: inherit;
+  font-size: 1.1rem;
+  font-weight: 800;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 10px;
   cursor: pointer;
   transition: all 0.2s;
 }
+.sbp-vote-pouce { font-size: 1.6rem; line-height: 1; }
 .sbp-vote:hover {
   transform: scale(1.12);
-  border-color: var(--ab-muted);
+  border-color: var(--sbp-encre-2);
 }
 .sbp-vote.monter.actif {
   color: var(--sbp-vert);
@@ -535,20 +544,21 @@
   font-family: 'Fraunces', Georgia, serif;
   font-size: 2.1rem;
   font-weight: 700;
-  min-width: 70px;
+  min-width: 56px;
   text-align: center;
+  line-height: 1.2;
 }
 .sbp-score.positif { color: var(--sbp-vert); }
 .sbp-score.negatif { color: var(--sbp-rouge); }
-.sbp-score.neutre { color: var(--ab-muted); }
+.sbp-score.neutre { color: var(--sbp-encre-2); }
 .sbp-score-libelle {
-  font-size: 0.95rem;
-  color: var(--ab-muted);
+  font-size: 1rem;
+  color: var(--sbp-encre-2);
   font-weight: 800;
   text-align: center;
 }
 .sbp-badge {
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 800;
   padding: 9px 20px;
   border-radius: 100px;
@@ -574,7 +584,7 @@
   color: var(--ab-ink);
 }
 .sbp-carte-meta {
-  color: var(--ab-muted);
+  color: var(--sbp-encre-2);
   font-size: 1rem;
   font-weight: 700;
   margin-bottom: 16px;
@@ -602,7 +612,7 @@
 }
 .sbp-carte-lien:hover {
   background: var(--sbp-vert);
-  color: color-mix(in oklab, var(--ab-bg) 92%, white);
+  color: var(--sbp-bouton-texte);
 }
 .sbp-carte-actions {
   display: flex;
@@ -625,7 +635,7 @@
 .sbp-acte.signaler {
   background: transparent;
   border: 2px solid var(--ab-border);
-  color: var(--ab-muted);
+  color: var(--sbp-encre-2);
 }
 .sbp-acte.signaler:hover {
   color: var(--sbp-rouge);
@@ -642,13 +652,13 @@
 .sbp-vide {
   text-align: center;
   padding: 80px 28px;
-  color: var(--ab-muted);
+  color: var(--sbp-encre-2);
   background: var(--ab-surface);
   border: 3px dashed var(--sbp-bord-2);
   border-radius: 28px;
 }
 .sbp-vide-grande { font-size: 4.6rem; margin-bottom: 16px; }
-.sbp-vide h3 {
+.sbp-vide h2, .sbp-vide h3 {
   color: var(--sbp-encre-2);
   font-size: 1.7rem;
   margin-bottom: 10px;
@@ -680,14 +690,13 @@
 
 /* ─── Écrans étroits : tout reste lisible, on ne rétrécit presque rien ─── */
 @media (max-width: 680px) {
-  .sbp { padding: 0 20px 90px; font-size: 1.05rem; }
+  .sbp { padding: 0 16px 90px; }
   .sbp-deux-colonnes { grid-template-columns: 1fr; }
-  .sbp-grille { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
+  .sbp-grille { grid-template-columns: 1fr; gap: 18px; }
   .sbp-rubrique-icone { width: 88px; height: 88px; font-size: 2.8rem; }
   .sbp-carte-corps { padding: 22px; }
   .sbp-carte-titre { font-size: 1.4rem; }
-  .sbp-carte-resume { font-size: 1.1rem; }
-  .sbp-entete-rubrique h2 { font-size: 1.9rem; }
+  .sbp-entete-rubrique h1 { font-size: 1.9rem; }
   .sbp-rubrique-grande { width: 88px; height: 88px; font-size: 2.8rem; }
   .sbp-onglet { padding: 12px 20px; font-size: 1rem; }
   .sbp-hero h1 { font-size: clamp(1.9rem, 7vw, 2.4rem); }
@@ -695,7 +704,6 @@
 }
 @media (max-width: 480px) {
   .sbp-grille { grid-template-columns: 1fr; }
-  .sbp-vote { width: 60px; height: 60px; font-size: 1.7rem; }
 }
 
 /* ─── Animations réduites si le système le demande ─── */
@@ -713,3 +721,63 @@
   .sbp-recherche input { padding: 16px 18px 16px 58px; font-size: 1.1rem; }
   .sbp-recherche-icone { left: 20px; font-size: 1.5rem; }
 }
+
+/* ─── Aides à la lecture et à l'utilisation ─── */
+.sbp-cache {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.sbp-tel {
+  color: var(--sbp-accent-texte);
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
+  display: inline-block;
+  min-width: 44px;
+  min-height: 44px;
+  box-sizing: border-box;
+  text-align: center;
+  padding: 6px 8px;
+  margin: -6px 0;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.sbp-carte-resume a:focus-visible { border-radius: 6px; }
+.sbp-carte-lien small { font-weight: 700; font-size: 1rem; }
+.sbp-erreur {
+  margin: 0 0 20px;
+  padding: 14px 18px;
+  border: 3px solid var(--sbp-rouge);
+  border-radius: 18px;
+  background: color-mix(in oklab, var(--sbp-rouge) 10%, var(--ab-surface));
+  color: var(--ab-ink);
+  font-weight: 800;
+}
+.sbp-champ-invalide input,
+.sbp-champ-invalide textarea { border-color: var(--sbp-rouge); }
+
+/* Le bouton « Retour » reste toujours visible en haut de l'écran. */
+.sbp-retour-collant {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 8px 0;
+  background: var(--ab-bg);
+}
+.sbp-retour-collant .sbp-retour { margin: 0; }
+.sbp-retour-bas { display: flex; justify-content: center; margin-top: 12px; }
+.sbp-retour-bas .sbp-retour { margin: 0; }
+.sbp-titre-focus:focus { outline: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sbp *:hover, .sbp *:active { transform: none !important; }
+  .sbp-carte { animation: none !important; }
+}
+.sbp-aide { color: var(--sbp-encre-2); font-size: 1rem; margin: -12px 0 18px; }
+.sbp-proposer-bouton small { font-size: 1rem; font-weight: 700; color: var(--sbp-encre-2); }
+.sbp-proposer-bouton:hover small { color: inherit; }
